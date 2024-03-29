@@ -1,5 +1,8 @@
 # Serverless
 
+* Serverless config
+``` sls config credentials --provider aws --key YOUR_ACCESS_KEY --secret YOUR_SECRET_KEY --profile PROFILE_NAME ```<br>
+
 * Creating a Serverless Application <br>
 ``` serverless ```
 * Deploying the Serverless Application (Complete Stack) <br>
@@ -74,3 +77,23 @@ provider:
 ```
 
 * This IAM policy will allow our lambda function to allow all actions on the lambda functions in same account.
+
+## Environment Variables in Serverless project-4
+
+* Using environment variables.
+
+```
+provider:
+  name: aws
+  runtime: python3.9
+  environment:
+    PROJECT_NAME: 'DE_WHS_TOOLS' # Common to all functions
+
+functions:
+  hello-env-de:
+    handler: handler.hello
+  hello-env-tie:
+    handler: handler.hello
+    environment:
+      PROJECT_NAME: 'TIE_TOOLS' # Specific to this function
+```
