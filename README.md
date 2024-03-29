@@ -51,3 +51,26 @@ provider:
   ```
 
 * This will apply to all the function unless attributes are defined explicitly.
+
+## IAM Authorization for Lambda project-3
+
+* By default, Lambda functions are not authorized to access any AWS resources or services such as S3, DynamoDB etc.
+* For this we need to provide IAM policy to allow the access to specific AWS resources.
+
+```
+provider:
+  name: aws
+  runtime: python3.9
+
+  # IAM Policy
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "lambda:*" # Allow all actions such as list_functions() etc.
+          Resource:
+            - "*" # Allow to all Lambda Functions in the account
+```
+
+* This IAM policy will allow our lambda function to allow all actions on the lambda functions in same account.
