@@ -180,5 +180,6 @@ pyrightconfig.json
 ### Serverless ###
 # Ignore build directory
 .serverless
-
+.pem
+.aws-sam/
 # End of https://www.toptal.com/developers/gitignore/api/python,serverless

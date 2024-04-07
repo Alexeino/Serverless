@@ -97,3 +97,18 @@ functions:
     environment:
       PROJECT_NAME: 'TIE_TOOLS' # Specific to this function
 ```
+
+# AWS SAM
+
+* Creating a SAM application<br>
+``` sam init ```
+* Creating artifactory through SAM build<br>
+``` sam build ```
+* Deploying App to the AWS Cloudformation Stack<br>
+``` sam deploy --guided ``` (first time)<br> 
+``` sam deploy ```
+* Deploying Serverless API locally<br>
+``` sam local start-api ```
+> **Note** During Local development after making changes to the code re-build the App and restart the local server for changes to be reflected locally
+* Invoking a SAM lambda funtion locally with event.json<br>
+``` sam local invoke -e event.json ```
