@@ -1,0 +1,46 @@
+service: thumbnail-app
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.10
+  timeout: 20
+  memorySize: 256
+  region: eu-north-1
+  profile: dev
+  stage: dev
+  environment:
+    THUMBNAIL_SIZE: 128
+    REGION_NAME: ${self:provider.region}
+
+
+# IAM Roles
+
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Resource: '*'
+          Action: 's3:*' 
+
+
+custom:
+  bucket: alexeino-thumbnails
+  pythonRequirements:
+    dockerizePip: true
+  
+
+functions:
+  generator:
+    handler: handler.thumbnail_generator
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
+
+
+plugins:
+  - serverless-python-requirements

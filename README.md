@@ -112,3 +112,70 @@ functions:
 > **Note** During Local development after making changes to the code re-build the App and restart the local server for changes to be reflected locally
 * Invoking a SAM lambda funtion locally with event.json<br>
 ``` sam local invoke -e event.json ```
+
+
+> List Items in AWS bucket<br>
+``` aws s3 ls <bucket-name>/ ``` <br>
+Emptying a bucket<br>
+``` aws s3 rm "s3://<bucket-name>/" --recursive ```
+
+# Thumbnail Generator App (Serverless)
+This small app lisntes on the ObjectCreated event on S3 bucket and then creates a thumbnail PNG out of the uploaded image.
+It uses Pillow for Image resizing and returns a Presigned URL which can be used for downloading the thumbnail which is valid for 3600 seconds.
+
+### STEPS
+1. Create a Serverless App using Starter Template (Python)
+``` serverless ```
+2. Add the following components one by one to ther **serverless.yamls**
+```
+provider:
+  name: aws
+  runtime: python3.10
+  timeout: 20                           # Timeout and Memory
+  memorySize: 256
+  region: eu-north-1
+  profile: dev                          # Serverless Profile Name
+  stage: dev                            # Stage Dev
+  environment:                          # ENV vars
+    THUMBNAIL_SIZE: 128
+    REGION_NAME: ${self:provider.region}
+```
+3. IAM Roles to allow access the S3 bucket contents under provider
+```
+provider:
+...
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Resource: '*'
+          Action: 's3:*' 
+```
+4. custom section to define custom variables to be used in serverless.yaml
+```
+custom:
+  bucket: alexeino-thumbnails
+  pythonRequirements:
+    dockerizePip: true
+```
+5. Add s3 event to the handler function which adds s3:ObjectCreated as trigger
+```
+functions:
+  generator:
+    handler: handler.thumbnail_generator
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
+```
+6. Add serverless-python-requirements plugin for making requirements.txt to work.
+```
+plugins:
+  - serverless-python-requirements
+```
+7. Define your handler method as you want, add requirements.txt and deploy it.
+``` sls deploy ```
+
+> **Note** In order to invoke the function locally which uses requirements.txt we will need to install serverless-python-requirements inside the project root dir otherwise we can't invoke this function locally. So Use ``` sls install -g serverless-python-requirements ``` inside project dir before using ``` sls invoke -f <function-name> ```
